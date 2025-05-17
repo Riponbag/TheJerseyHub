@@ -97,4 +97,31 @@ const adminLogin = async (req, res) => {
    } 
 };
 
-export { loginUser, registerUser, adminLogin };
+
+
+
+const googleLogin = async (req, res) => {
+  try {
+    const { email, name, googleId } = req.body
+
+    let user = await userModel.findOne({ email })
+
+    if (!user) {
+      // Register new user if not exists
+      user = new userModel({
+        name,
+        email,
+        password: googleId, // You might want to store googleId or a random string here
+      })
+      await user.save()
+    }
+
+    const token = createToken(user._id)
+    res.json({ success: true, token })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
+export { loginUser, registerUser, adminLogin ,googleLogin};
